@@ -1,84 +1,137 @@
-// Extension Name: Counter++
-// Extension ID: counterplusplus
-// Description: Count anything in Turbowarp!
+// Name: Counter++
+// ID: counterplusplus
+// Description: Count anything, at any time, in Scratch!
 // By: MrRedstonia <https://github.com/MrRedstonia>
 
-(function(ext) {
-    // Variable to hold the count
-    var count = 0;
+(function (Scratch) {
+  "use strict";
 
-    // Block and block menu descriptions
-    var descriptor = {
+  class CounterPlusPlus {
+    constructor() {
+      this.count = 0;
+    }
+
+    getInfo() {
+      return {
+        id: "counterplusplus",
+        name: "Counter++",
+        color1: "#4A4A5E",
         blocks: [
-            // “count {input} in {input}" Block
-            ['r', 'count %s in %s', 'countInput', 'Hello', 'Hello, World!'],
+          {
+            opcode: "countInput",
+            blockType: Scratch.BlockType.REPORTER,
+            text: "count [S1] in [S2]",
+            arguments: {
+              S1: {
+                type: Scratch.ArgumentType.STRING,
+                defaultValue: "Hello",
+              },
+              S2: {
+                type: Scratch.ArgumentType.STRING,
+                defaultValue: "Hello, World!",
+              },
+            },
+          },
+          {
+            opcode: "countWords",
+            blockType: Scratch.BlockType.REPORTER,
+            text: "count words [S1]",
+            arguments: {
+              S1: {
+                type: Scratch.ArgumentType.STRING,
+                defaultValue: "",
+              },
+            },
+          },
 
-            // “count words {input}" Block
-            ['r', 'count words %s', 'countWords', ''],
+          "---",
 
-        ['---'],
-
-            // Block to get current count
-            ['r', 'counter', 'getCounter'],
-
-            // Block to reset the counter to zero
-            [' ', 'reset counter', 'resetCounter'],
-
-            // Block to set the counter to a specific value
-            [' ', 'set counter to %n', 'setCounter', 10],
-
-            // Block to change the counter by a specified amount
-            [' ', 'change counter by %n', 'changeCounterBy', 1],
+          {
+            opcode: "getCounter",
+            blockType: Scratch.BlockType.REPORTER,
+            text: "counter",
+          },
+          {
+            opcode: "resetCounter",
+            blockType: Scratch.BlockType.COMMAND,
+            text: "reset counter",
+          },
+          {
+            opcode: "setCounter",
+            blockType: Scratch.BlockType.COMMAND,
+            text: "set counter to [N1]",
+            arguments: {
+              N1: {
+                type: Scratch.ArgumentType.NUMBER,
+                defaultValue: 10,
+              },
+            },
+          },
+          {
+            opcode: "changeCounterBy",
+            blockType: Scratch.BlockType.COMMAND,
+            text: "change counter by [N1]",
+            arguments: {
+              N1: {
+                type: Scratch.ArgumentType.NUMBER,
+                defaultValue: 1,
+              },
+            },
+          },
+          {
+            blockType: Scratch.BlockType.SEPARATOR,
+          },
         ],
-    };
+      };
+    }
 
-    // Function to the “count {input} in {input}" block
-    ext.countInput = function(word, text) {
-        var count = 0;
-        var wordLen = word.length;
-        var textLen = text.length;
-        if (word === "") {
-            return 0;
+    countInput(args) {
+      const word = Scratch.Cast.toString(args.S1);
+      const text = Scratch.Cast.toString(args.S2);
+      let count = 0;
+      const wordLen = word.length;
+      const textLen = text.length;
+
+      if (word === "") {
+        return 0;
+      }
+
+      for (let i = 0; i < textLen - wordLen + 1; i++) {
+        if (text.substring(i, i + wordLen) === word) {
+          count++;
         }
-        for (var i = 0; i < textLen - wordLen + 1; i++) {
-            if (text.substring(i, i + wordLen) === word) {
-                count++;
-            }
-        }
-        return count;
-    };
+      }
 
-    // Function to count words in a string
-    ext.countWords = function(text) {
-        if (text.trim() === "") {
-            // If the input is blank or only contains spaces, return 0
-            return 0;
-        }
-        var words = text.split(/\s+/); // Split by whitespace
-        return words.length;
-    };
+      return count;
+    }
 
-    // Function to get the current count
-    ext.getCounter = function() {
-        return count;
-    };
+    countWords(args) {
+      const text = Scratch.Cast.toString(args.S1);
 
-    // Function to reset the counter to zero
-    ext.resetCounter = function() {
-        count = 0;
-    };
+      if (text.trim() === "") {
+        return 0;
+      }
 
-    // Function to set the counter to a specific value
-    ext.setCounter = function(value) {
-        count = value;
-    };
+      const words = text.split(/\s+/);
+      return words.length;
+    }
 
-    // Function to change the counter by a specified amount
-    ext.changeCounterBy = function(amount) {
-        count += amount;
-    };
+    getCounter() {
+      return this.count;
+    }
 
-    // Register the extension
-    ScratchExtensions.register('Counter++', descriptor, ext);
-    descriptor.color = "#4A4A5E";
-})(this);
+    resetCounter() {
+      this.count = 0;
+    }
+
+    setCounter(args) {
+      this.count = Scratch.Cast.toNumber(args.N1);
+    }
+
+    changeCounterBy(args) {
+      this.count += Scratch.Cast.toNumber(args.N1);
+    }
+  }
+
+  Scratch.extensions.register(new CounterPlusPlus());
+})(Scratch);
