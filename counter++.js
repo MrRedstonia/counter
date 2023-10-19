@@ -1,6 +1,6 @@
 // Extension Name: Counter++
 // Extension ID: counterplusplus
-// Description: Count anything in Turbowarp
+// Description: Count anything in Turbowarp!
 // By: MrRedstonia <https://github.com/MrRedstonia>
 
 (function(ext) {
